@@ -61,7 +61,7 @@ class Modeling(ABC):
     def process_all(self, init_data=None):
         init_data = self.get_init_data(init_data)
         if self.apply:
-            processed_data = [self.handle_process(data, idx) for idx, data in enumerate(tqdm(init_data, desc='now applying modeling for each data:'))]
+            processed_data = [self.handle_process(data, self.get_log_point(idx)) for idx, data in enumerate(tqdm(init_data, desc='now applying modeling for each data:'))]
         else:
             processed_data = self.handle_process(init_data)
         if self.next_list:
