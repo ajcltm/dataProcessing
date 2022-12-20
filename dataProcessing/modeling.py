@@ -29,10 +29,11 @@ class Modeling(ABC):
     def handle_process(self, init_data=None, log_point='object'):
         try:
             data = self.process(init_data=init_data)
-            logger.info('success!')
+            logger.info(f'{log_point} success!')
             return data 
         except:
             logger.error(f'{log_point} {traceback.format_exc()}')
+            pass
     
     def export_type(self, path):
         return os.path.splitext(path)[-1]
@@ -55,13 +56,13 @@ class Modeling(ABC):
     
     def get_log_point(self, idx):
         if self.folder_path:
-            return os.listdir(self.folder_path).index(idx)
+            return os.listdir(self.folder_path)[idx]
         return f'index : {idx}'
 
     def process_all(self, init_data=None):
         init_data = self.get_init_data(init_data)
         if self.apply:
-            processed_data = [self.handle_process(data, self.get_log_point(idx)) for idx, data in enumerate(tqdm(init_data, desc='now applying modeling for each data:'))]
+            processed_data = [i for i in (self.handle_process(data, self.get_log_point(idx)) for idx, data in enumerate(tqdm(init_data, desc='now applying modeling for each data:'))) if i is not None]
         else:
             processed_data = self.handle_process(init_data)
         if self.next_list:
@@ -71,19 +72,3 @@ class Modeling(ABC):
 
     def add_next(self, modeling):
         self.next_list.append(modeling)
-
-
-if __name__ == '__main__':
-    from pydantic import BaseModel
-    class Data(BaseModel):
-        attr_1: str
-        attr_2: str
-
-
-    class Test(Modeling):
-        def process(self, init_data=None):
-            return Data(**init_data)
-    
-    data = {'a':1, 'b':2}
-    data = {'attr_1': 'kim', 'attr_2':'lee'}
-    Test().process_all(data)
