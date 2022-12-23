@@ -60,28 +60,28 @@ class TestModeling(unittest.TestCase):
     def tearDown(self) -> None:
         shutil.rmtree(self.folder_path)
 
-    @unittest.skip('for some reason')
+    # @unittest.skip('for some reason')
     def test_1_simple_modeling(self):
         data = ApplyModeling(folder_path=self.folder_path, apply=True).process_all()
         print(f'Final Modeling data : \n {data}')
     
-    @unittest.skip('for some reason')
+    # @unittest.skip('for some reason')
     def test_2_origin_modeling(self):
         data = NoApplyingModeling(folder_path=self.folder_path).process_all()
         print(f'Final Modeling data : \n {data}')
     
-    @unittest.skip('for some reason')
+    # @unittest.skip('for some reason')
     def test_3_file_modeling(self):
         data = ApplyModeling(file_path=self.file_path).process_all()
         print(f'Final Modeling data : \n {data}')
 
-    @unittest.skip('for some reason')
+    # @unittest.skip('for some reason')
     def test_4_object_modeling(self):
         data_1 = {'outlook' : {'attr_1': 'value_1', 'attr_2': 'value_2','attr_3': 'value_3','attr_4': 'value_4'}}
         data = ApplyModeling().process_all(data_1)
         print(f'Final Modeling data : \n {data}')
 
-    @unittest.skip('for some reason')
+    # @unittest.skip('for some reason')
     def test_5_next_modeling(self):
         md = ApplyModeling(folder_path=self.folder_path, apply=True)
         nmd = NextModeling(apply=True)
