@@ -9,10 +9,10 @@ class Dplogger:
         self.logger = logger
     
     def event_call(self, state):
-        if state.result == 'Success':
-            self.logger.info(f'{state.current_index} {state.current_data} {state.result}')
+        if state.current_result == 'Success':
+            self.logger.info(f'{state.current_index} {state.current_data} {state.current_result}')
         else:
-            self.logger.exception(f'{state.current_index} {state.current_data} {state.result}')
+            self.logger.exception(f'{state.current_index} {state.current_data} {state.current_result}')
 
 
 def get_logger(dir_log_folder_name):

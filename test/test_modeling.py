@@ -4,6 +4,7 @@ import os
 import shutil
 from pathlib import Path
 import pickle
+import json
 from pydantic import BaseModel
 
 class DataModel(BaseModel):
@@ -24,7 +25,7 @@ class NoApplyingModeling(modeling.Modeling):
     def process(self, init_data=None):
         temp = []
         for data in init_data:
-            temp.append(DataModels(**data))
+            temp.append(DataModel(**data))
         return temp 
 
 class NextModeling(modeling.Modeling):
@@ -43,13 +44,13 @@ class TestModeling(unittest.TestCase):
         data_awk = {'outlook' : {'awk_1': 'awk_value_1'}}
         data_list = [data_1,data_2,data_3,data_4, data_awk] 
         self.folder_path = Path.cwd().joinpath('test', 'data_folder')
-        self.file_path = Path.cwd().joinpath('test', 'data_folder', 'data_1.pickle')
+        self.file_path = Path.cwd().joinpath('test', 'data_folder', 'data_1.json')
         os.mkdir(self.folder_path)
 
         for idx, data in enumerate(data_list):
-            file_path = self.folder_path.joinpath(f'data_{idx}.pickle')
-            with open(file_path, mode='wb') as fw:
-                pickle.dump(data, fw)
+            file_path = self.folder_path.joinpath(f'data_{idx}.json')
+            with open(file_path, mode='w') as fw:
+                json.dump(data, fw)
 
     def tearDown(self) -> None:
         shutil.rmtree(self.folder_path)

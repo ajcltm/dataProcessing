@@ -27,7 +27,9 @@ def down_dimension(data, num):
 class State:
     current_data: str 
     current_index: str
-    result : str 
+    current_result : str 
+    total_success : int
+    total_fails : int
 
 
 class Modeling(ABC):
@@ -39,7 +41,7 @@ class Modeling(ABC):
         self.apply = apply
         self.dim_down = dim_down
         self.next_list = [] 
-        self.state = State(current_data='none', current_index='none', result='none')
+        self.state = State(current_data='none', current_index='none', current_result='none', total_success=0, total_fails=0)
         self.observer_list = []
         self.add_basic_obsever()
     
@@ -52,8 +54,6 @@ class Modeling(ABC):
         if self.folder_path:
             path = get_first_file_path(self.folder_path)
             type = export_type(path)
-            print(f'path : {path}')
-            print(f'type : {type}')
             return fileLoader.Factory_fileLoader().get_file_loader(type)().load(self.folder_path, path_type='folder')
         if self.file_path:
             type = export_type(self.file_path)
@@ -76,7 +76,7 @@ class Modeling(ABC):
     def process_all(self, init_data=None):
         init_data = self.get_init_data(init_data)
         if self.apply:
-            processed_data = [i for i in (self.handle_process(data, idx, folder_base=self.folder_path) for idx, data in enumerate(tqdm(init_data, desc='now applying modeling for each data:'))) if i is not None]
+            processed_data = [i for i in (self.handle_process(data, idx, folder_base=self.folder_path) for idx, data in enumerate(tqdm(init_data, desc='[dataProcessing] now applying modeling for each data'))) if i is not None]
         else:
             processed_data = self.handle_process(init_data)
         if self.dim_down :
@@ -85,6 +85,7 @@ class Modeling(ABC):
         if self.next_list:
             for next_modeling in self.next_list:
                 processed_data = next_modeling.process_all(processed_data)
+        print(f'[dataProcessing] proecss all done. total : {self.state.total_success + self.state.total_fails}, success : {self.state.total_success}, fail : {self.state.total_fails}')
         return processed_data
 
     def add_next(self, modeling):
@@ -99,7 +100,10 @@ class Modeling(ABC):
             current_data = self.file_list[index]
         else:
             current_data = 'object'
-        self.state = State(current_data=current_data, current_index=current_index, result=result)
+        if result == 'Success' :
+            self.state = State(current_data=current_data, current_index=current_index, current_result=result, total_success=self.state.total_success+1, total_fails=self.state.total_fails)
+        else :
+            self.state = State(current_data=current_data, current_index=current_index, current_result=result, total_success=self.state.total_success, total_fails=self.state.total_fails+1)
         self.notify()
     
     def notify(self):
